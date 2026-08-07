@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<title>CYBERTRON — AI ya Isaya Peter John</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#070A0F; --panel:#0C121B; --panel-soft:#111925; --border:#1D2836;
+    --text:#E9EEF5; --text-soft:#7C8B9E; --accent:#22D3EE; --accent2:#7C5CFF;
+    --danger:#FF5C7A; --ok:#3DDC97;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+  html,body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-height:100vh;overflow-x:hidden;}
+  h1,h2{font-family:'Space Grotesk',sans-serif;letter-spacing:-0.01em;}
+  .mono{font-family:'JetBrains Mono',monospace;}
+  button{font-family:inherit;cursor:pointer;border:none;}
+  .wrap{max-width:520px;margin:0 auto;padding:0 18px 40px;min-height:100vh;display:flex;flex-direction:column;}
+
+  header{display:flex;align-items:center;gap:10px;padding:20px 0 10px;}
+  .logo-mark{width:38px;height:38px;border-radius:11px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-weight:700;font-family:'Space Grotesk';color:#04121A;font-size:15px;flex-shrink:0;}
+  header h1{font-size:19px;}
+  header p{font-size:11px;color:var(--text-soft);}
+
+  .stage{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;padding:24px 0;}
+
+  .orb-wrap{position:relative;width:190px;height:190px;display:flex;align-items:center;justify-content:center;}
+  .orb-ring{position:absolute;inset:0;border-radius:50%;border:1px solid var(--border);}
+  .orb-ring.r2{inset:18px;}
+  .orb{width:118px;height:118px;border-radius:50%;background:radial-gradient(circle at 35% 30%, #1a2836, #070A0F 70%);border:1.5px solid var(--accent);box-shadow:0 0 0 0 rgba(34,211,238,.4);position:relative;display:flex;align-items:center;justify-content:center;transition:box-shadow .12s ease, transform .12s ease;}
+  .orb::after{content:"";position:absolute;inset:14px;border-radius:50%;background:conic-gradient(from 0deg, var(--accent), var(--accent2), var(--accent));opacity:.18;animation:spin 6s linear infinite;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .orb-label{font-family:'JetBrains Mono';font-size:10.5px;letter-spacing:.08em;color:var(--accent);z-index:1;}
+
+  .cam-preview{position:absolute;bottom:-6px;right:-6px;width:52px;height:52px;border-radius:50%;overflow:hidden;border:2px solid var(--bg);background:var(--panel-soft);display:none;}
+  .cam-preview.active{display:block;}
+  .cam-preview video{width:100%;height:100%;object-fit:cover;transform:scaleX(-1);}
+
+  .status-line{font-family:'JetBrains Mono';font-size:12px;color:var(--text-soft);text-align:center;min-height:16px;}
+  .status-line.live{color:var(--ok);}
+
+  .controls{display:flex;align-items:center;gap:14px;}
+  .ctrl-btn{width:52px;height:52px;border-radius:50%;background:var(--panel);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--text);}
+  .ctrl-btn.active{background:var(--accent);border-color:var(--accent);color:#04121A;}
+  .ctrl-btn.danger{background:var(--danger);border-color:var(--danger);color:#fff;}
+  .main-btn{width:66px;height:66px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#04121A;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 26px rgba(34,211,238,.25);}
+  .main-btn.on{background:var(--danger);box-shadow:0 8px 26px rgba(255,92,122,.25);}
+
+  .snap-btn{display:flex;align-items:center;gap:6px;font-size:11.5px;font-weight:500;color:var(--text-soft);border:1px solid var(--border);border-radius:999px;padding:8px 14px;background:var(--panel);}
+  .snap-btn:disabled{opacity:.35;}
+
+  .transcript{width:100%;border-top:1px solid var(--border);padding-top:14px;max-height:32vh;overflow-y:auto;display:flex;flex-direction:column;gap:8px;}
+  .transcript::-webkit-scrollbar{display:none;}
+  .msg-row{max-width:88%;font-size:13.5px;line-height:1.5;padding:9px 13px;border-radius:14px;}
+  .msg-row.ai{align-self:flex-start;background:var(--panel-soft);border:1px solid var(--border);}
+  .msg-row.ai .who{color:var(--accent);}
+  .msg-row.me{align-self:flex-end;background:var(--panel);border:1px solid var(--border);}
+  .msg-row.me .who{color:var(--accent2);}
+  .who{font-family:'JetBrains Mono';font-size:9.5px;letter-spacing:.06em;display:block;margin-bottom:3px;opacity:.8;}
+
+  .error-box{background:rgba(255,92,122,.1);border:1px solid var(--danger);color:var(--danger);font-size:12.5px;padding:10px 13px;border-radius:12px;margin-top:10px;}
+
+  footer{text-align:center;padding-top:18px;}
+  footer p{font-size:11px;color:var(--text-soft);}
+  footer a{color:var(--accent);text-decoration:none;font-weight:600;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="logo-mark">C</div>
+    <div>
+      <h1>CYBERTRON</h1>
+      <p>AI wa kibinafsi wa Isaya Peter John</p>
+    </div>
+  </header>
+
+  <div class="stage">
+    <div class="orb-wrap">
+      <div class="orb-ring"></div>
+      <div class="orb-ring r2"></div>
+      <div class="orb" id="orb">
+        <span class="orb-label" id="orb-label">OFFLINE</span>
+      </div>
+      <div class="cam-preview" id="cam-preview"><video id="cam-video" autoplay muted playsinline></video></div>
+    </div>
+
+    <div class="status-line" id="status-line">Bonyeza kuanza mazungumzo</div>
+
+    <div class="controls">
+      <button class="ctrl-btn" id="cam-btn" title="Camera">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m23 7-7 5 7 5V7Z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+      </button>
+      <button class="main-btn" id="main-btn" title="Anza/Simama">
+        <svg id="main-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v1a7 7 0 0 1-14 0v-1M12 18v4M8 22h8"/></svg>
+      </button>
+      <button class="ctrl-btn" id="mute-btn" title="Mute">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v1a7 7 0 0 1-14 0v-1M12 18v4M8 22h8"/></svg>
+      </button>
+    </div>
+
+    <button class="snap-btn" id="snap-btn" disabled>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2Z"/><circle cx="12" cy="13" r="4"/></svg>
+      Mwoneshe picha sasa (AI anione)
+    </button>
+
+    <div id="error-slot"></div>
+  </div>
+
+  <div class="transcript" id="transcript"></div>
+
+  <footer>
+    <p>Umeundwa na <a href="https://johnpot.netlify.app" target="_blank">Isaya Peter John</a> — Jonny Build</p>
+  </footer>
+</div>
+
+<audio id="remote-audio" autoplay></audio>
+
+<script>
+const orb = document.getElementById("orb");
+const orbLabel = document.getElementById("orb-label");
+const statusLine = document.getElementById("status-line");
+const mainBtn = document.getElementById("main-btn");
+const camBtn = document.getElementById("cam-btn");
+const muteBtn = document.getElementById("mute-btn");
+const snapBtn = document.getElementById("snap-btn");
+const camPreview = document.getElementById("cam-preview");
+const camVideo = document.getElementById("cam-video");
+const transcriptEl = document.getElementById("transcript");
+const errorSlot = document.getElementById("error-slot");
+const remoteAudioEl = document.getElementById("remote-audio");
+
+let pc = null;
+let dc = null;
+let micStream = null;
+let camStream = null;
+let connected = false;
+let camOn = false;
+let muted = false;
+let audioCtx, analyser, dataArray, rafId;
+
+function setStatus(text, live){
+  statusLine.textContent = text;
+  statusLine.className = "status-line" + (live ? " live" : "");
+}
+function showError(msg){
+  errorSlot.innerHTML = `<div class="error-box">${msg}</div>`;
+}
+function clearError(){ errorSlot.innerHTML = ""; }
+
+function addMsg(who, text){
+  if(!text) return;
+  const row = document.createElement("div");
+  row.className = "msg-row " + (who === "ai" ? "ai" : "me");
+  row.innerHTML = `<span class="who">${who === "ai" ? "CYBERTRON" : "WEWE"}</span>${text}`;
+  transcriptEl.appendChild(row);
+  transcriptEl.scrollTop = transcriptEl.scrollHeight;
+}
+
+function startVisualizer(stream){
+  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  const src = audioCtx.createMediaStreamSource(stream);
+  analyser = audioCtx.createAnalyser();
+  analyser.fftSize = 256;
+  src.connect(analyser);
+  dataArray = new Uint8Array(analyser.frequencyBinCount);
+  function loop(){
+    analyser.getByteFrequencyData(dataArray);
+    const avg = dataArray.reduce((a,b)=>a+b,0) / dataArray.length;
+    const scale = 1 + Math.min(avg/90, 0.35);
+    const glow = Math.min(avg/2, 40);
+    orb.style.transform = `scale(${scale})`;
+    orb.style.boxShadow = `0 0 ${glow}px ${glow/2}px rgba(34,211,238,.35)`;
+    rafId = requestAnimationFrame(loop);
+  }
+  loop();
+}
+function stopVisualizer(){
+  if(rafId) cancelAnimationFrame(rafId);
+  if(audioCtx) audioCtx.close();
+  orb.style.transform = "scale(1)";
+  orb.style.boxShadow = "none";
+}
+
+async function connect(){
+  clearError();
+  setStatus("Inaunganisha...");
+  try{
+    const sessionResp = await fetch("/.netlify/functions/session", { method: "POST" });
+    const sessionData = await sessionResp.json();
+    if(!sessionResp.ok){
+      throw new Error(sessionData.error?.message || sessionData.error || "Imeshindwa kupata session token.");
+    }
+    const ephemeralKey = sessionData.client_secret.value;
+    const model = sessionData.model || "gpt-realtime-mini";
+
+    pc = new RTCPeerConnection();
+
+    pc.ontrack = (e)=>{
+      remoteAudioEl.srcObject = e.streams[0];
+      startVisualizer(e.streams[0]);
+    };
+
+    micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    micStream.getTracks().forEach(track => pc.addTrack(track, micStream));
+
+    dc = pc.createDataChannel("oai-events");
+    dc.addEventListener("message", handleRealtimeEvent);
+    dc.addEventListener("open", ()=>{
+      setStatus("Live — ongea sasa", true);
+      orbLabel.textContent = "LIVE";
+      connected = true;
+      mainBtn.classList.add("on");
+      snapBtn.disabled = false;
+    });
+
+    const offer = await pc.createOffer();
+    await pc.setLocalDescription(offer);
+
+    const sdpResp = await fetch(`https://api.openai.com/v1/realtime?model=${model}`, {
+      method: "POST",
+      body: offer.sdp,
+      headers: {
+        Authorization: `Bearer ${ephemeralKey}`,
+        "Content-Type": "application/sdp",
+      },
+    });
+    if(!sdpResp.ok){
+      throw new Error("Imeshindwa kuunganisha na OpenAI Realtime (angalia API key / model).");
+    }
+    const answerSdp = await sdpResp.text();
+    await pc.setRemoteDescription({ type: "answer", sdp: answerSdp });
+
+  }catch(err){
+    showError(err.message);
+    setStatus("Imeshindwa kuunganisha");
+    disconnect();
+  }
+}
+
+function handleRealtimeEvent(e){
+  let evt;
+  try{ evt = JSON.parse(e.data); }catch(_){ return; }
+
+  if(evt.type === "response.audio_transcript.delta"){
+    let last = transcriptEl.querySelector(".msg-row.ai:last-child.streaming");
+    if(!last){
+      last = document.createElement("div");
+      last.className = "msg-row ai streaming";
+      last.innerHTML = `<span class="who">CYBERTRON</span><span class="txt"></span>`;
+      transcriptEl.appendChild(last);
+    }
+    last.querySelector(".txt").textContent += evt.delta;
+    transcriptEl.scrollTop = transcriptEl.scrollHeight;
+  }
+  if(evt.type === "response.audio_transcript.done"){
+    const streaming = transcriptEl.querySelector(".msg-row.ai.streaming");
+    if(streaming) streaming.classList.remove("streaming");
+  }
+  if(evt.type === "conversation.item.input_audio_transcription.completed"){
+    addMsg("me", evt.transcript);
+  }
+}
+
+function disconnect(){
+  if(dc) dc.close();
+  if(pc) pc.close();
+  if(micStream) micStream.getTracks().forEach(t=>t.stop());
+  stopCamera();
+  stopVisualizer();
+  pc = null; dc = null; micStream = null;
+  connected = false;
+  mainBtn.classList.remove("on");
+  orbLabel.textContent = "OFFLINE";
+  snapBtn.disabled = true;
+  setStatus("Bonyeza kuanza mazungumzo");
+}
+
+mainBtn.onclick = ()=>{
+  if(connected) disconnect();
+  else connect();
+};
+
+muteBtn.onclick = ()=>{
+  if(!micStream) return;
+  muted = !muted;
+  micStream.getAudioTracks().forEach(t => t.enabled = !muted);
+  muteBtn.classList.toggle("danger", muted);
+};
+
+async function startCamera(){
+  try{
+    camStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
+    camVideo.srcObject = camStream;
+    camPreview.classList.add("active");
+    camOn = true;
+    camBtn.classList.add("active");
+  }catch(err){
+    showError("Imeshindwa kufungua camera: " + err.message);
+  }
+}
+function stopCamera(){
+  if(camStream) camStream.getTracks().forEach(t=>t.stop());
+  camStream = null;
+  camPreview.classList.remove("active");
+  camOn = false;
+  camBtn.classList.remove("active");
+}
+camBtn.onclick = ()=>{ camOn ? stopCamera() : startCamera(); };
+
+snapBtn.onclick = ()=>{
+  if(!camOn || !dc || dc.readyState !== "open") return;
+  const canvas = document.createElement("canvas");
+  canvas.width = 480; canvas.height = 360;
+  canvas.getContext("2d").drawImage(camVideo, 0, 0, canvas.width, canvas.height);
+  const dataUrl = canvas.toDataURL("image/jpeg", 0.7);
+
+  dc.send(JSON.stringify({
+    type: "conversation.item.create",
+    item: {
+      type: "message",
+      role: "user",
+      content: [{ type: "input_image", image_url: dataUrl }]
+    }
+  }));
+  dc.send(JSON.stringify({ type: "response.create" }));
+  addMsg("me", "📷 (picha imetumwa)");
+};
+</script>
+</body>
+</html>
